@@ -43,41 +43,60 @@ namespace Ircc
             public const int RSVD = 8;
             public const int DATA = 12;
         }
+        
+        public class Code
+        {
+            // * -> placeholder code for future
+            public const short FAIL         = 000;
+            public const short SUCCESS      = 100;
 
+            public const short MSG          = 200; // normal msg
+            public const short MSG_ERR      = 205; // *
+            public const short SMSG         = 250; // server echo
+            public const short SMSG_ERR     = 255; // *
+
+            public const short SIGNUP       = 310; // signup req
+            public const short SIGNUP_ERR   = 315; // signup fail (duplicate name)
+            public const short LOGIN        = 320; // login req
+            public const short LOGIN_ERR    = 325; // no such name; name & pass mismatch
+
+            public const short LIST         = 400; // room list req
+            public const short LIST_ERR     = 405; // *
+            public const short SLIST        = 450; // server list req
+            public const short SLIST_ERR    = 455; // *
+
+            public const short JOIN         = 500; // join room req
+            public const short JOIN_FULL_ERR = 505;// target room full
+            public const short JOIN_NULL_ERR = 510;// target room does not exist
+            public const short SJOIN        = 550; // server join room's echo list req
+            public const short SJOIN_ERR    = 555; // *
+
+            public const short LEAVE        = 600; // leave room req
+            public const short LEAVE_ERR    = 605; // not valid room / not in target room
+
+            public const short CREATE       = 700; // create room req
+            public const short CREATE_DUPLICATE_ERR = 705; // room already exists
+            public const short CREATE_FULL_ERR = 710; // room is full
+
+            public const short HEARTBEAT    = 800; // heartbeat
+
+            public const short DESTROY      = 900; // destory room req
+            public const short DESTROY_ERR  = 905; // *
+            public const short SDESTROY     = 950; // server destroy room req
+            public const short SDESTROY_ERR = 955; // *
+        }
+       
         public static byte[] packetToBytes(Packet p)
         {
             /*
-            byte[] msg = new byte[size];
-            
-            msg[0-1] = BitConverter.GetBytes(p.header.comm);
-            msg[2-4] = 
+            byte[] msg = new byte[2 + 2 + 4 + 4 + p.data.Length];
+            Array.Copy(GetBytes(p.header.comm), 0, msg, FieldIndex.COMM, 2);
+            Array.Copy(GetBytes(p.header.code), 0, msg, FieldIndex.CODE, 2);
+            Array.Copy(GetBytes(p.header.size), 0, msg, FieldIndex.SIZE, 4);
+            Array.Copy(GetBytes(p.header.reserved), 0, msg, FieldIndex.RSVD, 4);
+            Array.Copy(p.data, 0, msg, FieldIndex.DATA, p.data.size);
 
-            Array.Copy(GetBytes(p.header.comm), 0, msg, 0, 2);
-            Array.Copy(GetBytes(p.header.code), 0, msg, 2, 2);
-            Array.Copy(GetBytes(p.header.size), 0, msg, 4, 4);
-            Array.Copy(GetBytes(p.header.reserved), 0, msg, 8, 4);
-            Array.Copy(p.data, 0, msg, 12, p.data.size);
-           
-            //////////////////// 
-            comm type (2byte)
-            msg[0] = p.header.comm & 11110000b;
-            msg[1] = p.header.comm & 00001111b;
-
-            code (2byte)
-            msg[2] = p.header.code & 11110000b;
-            msg[3] = p.header.code & 00001111b;
-
-            size (4byte)
-            msg[4] = p.header.size
-            msg[5] = p.header.size
-            msg[6] = p.header.size
-            msg[7] = p.header.size
-
-            reserved (4byte)
-            msg[] = p.header.reserved
-            msg[] = p.header.reserved
-            msg[] = p.header.reserved
-            msg[] = p.header.reserved
+            return msg;
             */
 
             byte[] bComm = GetBytes(p.header.comm);
@@ -85,15 +104,11 @@ namespace Ircc
             byte[] bSize = GetBytes(p.header.size);
             byte[] bRsvd = GetBytes(p.header.reserved);
 
+            if (null == p.data)
+                return bComm.Concat(bCode).Concat(bSize).Concat(bRsvd).ToArray();
+
             return bComm.Concat(bCode).Concat(bSize).Concat(bRsvd).Concat(p.data).ToArray();
         }
-
-        /*
-        public static HeaderToByte //send this first
-        public static BodyToByte   //process this while sending and send when finished
-        public static ByteToHeader //get this first
-        public static ByteToPacket //get buffer size from header and receive (give header as argument)
-        */
 
         public static Header bytesToHeader(byte[] b)
         {
@@ -118,14 +133,5 @@ namespace Ircc
 
             return p;
         }
-
-        /*
-        private static byte[] SubArray(this byte[] data, int index, int length)
-        {
-            byte[] result = new byte[length];
-            Array.Copy(data, index, result, 0, length);
-            return result;
-        }
-        */
     }
 }
