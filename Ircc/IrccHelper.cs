@@ -134,6 +134,7 @@ namespace Ircc
             return p;
         }
 
+        
         public static byte[] CreateBytesPacket(short comm, short code, byte[] bMsg)
         {
             Header header;
@@ -146,7 +147,8 @@ namespace Ircc
             packet.header = header;
             packet.data = bMsg;
 
-            //send start
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code, bytesMsg));
             return packetToBytes(packet);
         }
 
@@ -162,7 +164,8 @@ namespace Ircc
             packet.header = header;
             packet.data = bMsg;
 
-            //send start
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
             return packetToBytes(packet);
         }
         public static byte[] CreateBytesPacket(short comm, short code)
@@ -177,7 +180,8 @@ namespace Ircc
             packet.header = header;
             packet.data = null;
 
-            //send start
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code));
             return packetToBytes(packet);
         }
     }
