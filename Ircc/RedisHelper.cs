@@ -27,26 +27,32 @@ namespace Ircc
         {
             RedisValue userId = Database.HashGet(USERS, username);
             if (userId.IsNull)
-                throw new Exception("Error: Sign in failed.");
+                return -1;
+                //throw new Exception("Error: Sign in failed.");
 
             string realPassword = (string)Database.HashGet(userPrefix + (long)userId, "password");
             if (password == realPassword)
-                throw new Exception("Error: Sign in failed.");
+                return -1;
+                //throw new Exception("Error: Sign in failed.");
 
             Database.SetAdd(CURRENTUSERS, userId);
             return (long)userId;
         }
 
-        public void SignOut(long userId)
+        //TODO: maybe return int instead of bool for error return value consistency?
+        public bool SignOut(long userId)
         {
             if (!Database.SetRemove(CURRENTUSERS, userId))
-                throw new Exception("Error: not in set");
+                return false;
+            return true;
+                //throw new Exception("Error: not in set");
         }
 
         public long CreateUser(string username, string password, bool isDummy = false, int chatCount = 0)
         {
             if (Database.KeyExists(username))
-                throw new Exception("Error: Sign up failed.");
+                return -1;
+                //throw new Exception("Error: Sign up failed.");
 
             long userId = Database.StringIncrement(nextUserId);
             RedisKey user = userPrefix + userId;

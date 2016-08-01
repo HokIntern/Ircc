@@ -14,6 +14,13 @@ namespace Ircc
         public int size;
         public int reserved;
 
+        public Header(short comm, short code, int size)
+        {
+            this.comm = comm;
+            this.code = code;
+            this.size = size;
+            this.reserved = 0;
+        }
         public Header(short comm, short code, int size, int reserved)
         {
             this.comm = comm;
@@ -64,33 +71,45 @@ namespace Ircc
             public const short SMSG_ERR     = 255; // *
 
             public const short SIGNUP       = 310; // signup req
+            public const short SIGNUP_RES   = 312; // signup success
             public const short SIGNUP_ERR   = 315; // signup fail (duplicate name)
-            public const short SIGNIN        = 320; // login req
-            public const short SIGNIN_ERR    = 325; // no such name; name & pass mismatch
+
+            public const short SIGNIN       = 320; // login req
+            public const short SIGNIN_RES   = 322; // login success
+            public const short SIGNIN_ERR   = 325; // no such name; name & pass mismatch
 
             public const short LIST         = 400; // room list req
+            public const short LIST_RES     = 402; // room list res
             public const short LIST_ERR     = 405; // *
             public const short SLIST        = 450; // server list req
+            public const short SLIST_RES    = 452; // server list res
             public const short SLIST_ERR    = 455; // *
 
             public const short JOIN         = 500; // join room req
+            public const short JOIN_RES     = 502; // join room success
             public const short JOIN_FULL_ERR = 505;// target room full
             public const short JOIN_NULL_ERR = 510;// target room does not exist
             public const short SJOIN        = 550; // server join room's echo list req
+            public const short SJOIN_RES    = 552; // server join room's echo list success
             public const short SJOIN_ERR    = 555; // *
 
             public const short LEAVE        = 600; // leave room req
+            public const short LEAVE_RES    = 602; // leave room success
             public const short LEAVE_ERR    = 605; // not valid room / not in target room
 
             public const short CREATE       = 700; // create room req
+            public const short CREATE_RES   = 702; // create room success
             public const short CREATE_DUPLICATE_ERR = 705; // room already exists
             public const short CREATE_FULL_ERR = 710; // room is full
 
             public const short HEARTBEAT    = 800; // heartbeat
+            public const short HEARTBEAT_RES = 802; // heartbeat res
 
-            public const short DESTROY      = 900; // destory room req
+            public const short DESTROY      = 900; // destroy room req
+            public const short DESTROY_RES  = 902; // destroy room success
             public const short DESTROY_ERR  = 905; // *
             public const short SDESTROY     = 950; // server destroy room req
+            public const short SDESTROY_RES = 952; // server destroy room success
             public const short SDESTROY_ERR = 955; // *
         }
        
