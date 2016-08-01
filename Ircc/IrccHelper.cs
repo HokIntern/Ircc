@@ -133,5 +133,56 @@ namespace Ircc
 
             return p;
         }
+
+        
+        public static byte[] CreateBytesPacket(short comm, short code, byte[] bMsg)
+        {
+            Header header;
+            header.comm = comm;
+            header.code = code;
+            header.size = bMsg.Length;
+            header.reserved = 0;
+
+            Packet packet;
+            packet.header = header;
+            packet.data = bMsg;
+
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code, bytesMsg));
+            return packetToBytes(packet);
+        }
+
+        public static byte[] CreateBytesPacket(short comm, short code, int reserv, byte[] bMsg)
+        {
+            Header header;
+            header.comm = comm;
+            header.code = code;
+            header.size = bMsg.Length;
+            header.reserved = reserv;
+
+            Packet packet;
+            packet.header = header;
+            packet.data = bMsg;
+
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
+            return packetToBytes(packet);
+        }
+        public static byte[] CreateBytesPacket(short comm, short code)
+        {
+            Header header;
+            header.comm = comm;
+            header.code = code;
+            header.size = 0;
+            header.reserved = 0;
+
+            Packet packet;
+            packet.header = header;
+            packet.data = null;
+
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code));
+            return packetToBytes(packet);
+        }
     }
 }
