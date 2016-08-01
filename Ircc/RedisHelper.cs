@@ -7,7 +7,7 @@ using StackExchange.Redis;
 
 namespace Ircc
 {
-    class RedisHelper
+    public class RedisHelper
     {
         private static ConfigurationOptions configurationOptions;
         private RedisKey USERS = "Users";
@@ -43,7 +43,7 @@ namespace Ircc
                 throw new Exception("Error: not in set");
         }
 
-        public long CreateUser(string username, string password, bool isDummy, int chatCount)
+        public long CreateUser(string username, string password, bool isDummy = false, int chatCount = 0)
         {
             if (Database.KeyExists(username))
                 throw new Exception("Error: Sign up failed.");
@@ -91,14 +91,16 @@ namespace Ircc
             Database.SortedSetRemove(RANKINGS, userId);
         }
 
+        //TODO: return Dictionary
         public void GetAllTimeRankings(int endRank)
         {
-            Database.SortedSetRangeByRank(RANKINGS, 0, endRank, Order.Descending);
+            Database.SortedSetRangeByRankWithScores(RANKINGS, 0, endRank, Order.Descending);
+            //Database.SortedSetRangeByRank(RANKINGS, 0, endRank, Order.Descending);
         }
 
         public void GetAllTimeRankings(int startRank, int endRank)
         {
-            Database.SortedSetRangeByRank(RANKINGS, startRank, endRank, Order.Descending);
+            Database.SortedSetRangeByRankWithScores(RANKINGS, startRank, endRank, Order.Descending);
         }
 
         /*

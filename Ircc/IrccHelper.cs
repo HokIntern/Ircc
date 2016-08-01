@@ -35,6 +35,7 @@ namespace Ircc
     }
     public static class IrccHelper
     {
+        public const int HEADER_SIZE = 12;
         public class FieldIndex
         {
             public const int COMM = 0;
@@ -43,7 +44,14 @@ namespace Ircc
             public const int RSVD = 8;
             public const int DATA = 12;
         }
-        
+
+        public class Comm
+        {
+            public const short CS = 0;
+            public const short SS = 1;
+            public const short DUMMY = 3;
+        }
+
         public class Code
         {
             // * -> placeholder code for future
@@ -57,8 +65,8 @@ namespace Ircc
 
             public const short SIGNUP       = 310; // signup req
             public const short SIGNUP_ERR   = 315; // signup fail (duplicate name)
-            public const short LOGIN        = 320; // login req
-            public const short LOGIN_ERR    = 325; // no such name; name & pass mismatch
+            public const short SIGNIN        = 320; // login req
+            public const short SIGNIN_ERR    = 325; // no such name; name & pass mismatch
 
             public const short LIST         = 400; // room list req
             public const short LIST_ERR     = 405; // *
@@ -86,7 +94,7 @@ namespace Ircc
             public const short SDESTROY_ERR = 955; // *
         }
        
-        public static byte[] packetToBytes(Packet p)
+        public static byte[] PacketToBytes(Packet p)
         {
             /*
             byte[] msg = new byte[2 + 2 + 4 + 4 + p.data.Length];
@@ -110,7 +118,7 @@ namespace Ircc
             return bComm.Concat(bCode).Concat(bSize).Concat(bRsvd).Concat(p.data).ToArray();
         }
 
-        public static Header bytesToHeader(byte[] b)
+        public static Header BytesToHeader(byte[] b)
         {
             Header h = new Header();
 
@@ -121,7 +129,7 @@ namespace Ircc
 
             return h;
         }
-        public static Packet bytesToPacket(byte[] b)
+        public static Packet BytesToPacket(byte[] b)
         {
             Packet p = new Packet();
 
@@ -149,7 +157,7 @@ namespace Ircc
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code, bytesMsg));
-            return packetToBytes(packet);
+            return PacketToBytes(packet);
         }
 
         public static byte[] CreateBytesPacket(short comm, short code, int reserv, byte[] bMsg)
@@ -166,7 +174,7 @@ namespace Ircc
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
-            return packetToBytes(packet);
+            return PacketToBytes(packet);
         }
         public static byte[] CreateBytesPacket(short comm, short code)
         {
@@ -182,7 +190,7 @@ namespace Ircc
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code));
-            return packetToBytes(packet);
+            return PacketToBytes(packet);
         }
     }
 }
