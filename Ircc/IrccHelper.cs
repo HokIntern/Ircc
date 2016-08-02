@@ -161,8 +161,7 @@ namespace Ircc
             return p;
         }
 
-        
-        public static byte[] CreateBytesPacket(short comm, short code, byte[] bMsg)
+        public static Packet CreatePacket(short comm, short code, byte[] bMsg)
         {
             Header header;
             header.comm = comm;
@@ -176,10 +175,10 @@ namespace Ircc
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code, bytesMsg));
-            return PacketToBytes(packet);
+            return packet;
         }
 
-        public static byte[] CreateBytesPacket(short comm, short code, int reserv, byte[] bMsg)
+        public static Packet CreatePacket(short comm, short code, int reserv, byte[] bMsg)
         {
             Header header;
             header.comm = comm;
@@ -193,9 +192,9 @@ namespace Ircc
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
-            return PacketToBytes(packet);
+            return packet;
         }
-        public static byte[] CreateBytesPacket(short comm, short code)
+        public static Packet CreatePacket(short comm, short code)
         {
             Header header;
             header.comm = comm;
@@ -205,11 +204,19 @@ namespace Ircc
 
             Packet packet;
             packet.header = header;
-            packet.data = null;
+            packet.data = null; //null data. but is it okay?
 
             //you can send this packet bytes
             //using socket.send(CreateBytesPacket(comm, code));
-            return PacketToBytes(packet);
+            return packet;
+        }
+
+        public static string PacketDebug(Packet p)
+        {
+            if(null == p.data)
+                return  "COMM: " + p.header.comm + "\nCODE: " + p.header.code +  "\nSIZE: " + p.header.size + "\nRSVD: " + p.header.reserved + "\nDATA: ";
+            else
+                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nRSVD: " + p.header.reserved + "\nDATA: " + Encoding.UTF8.GetString(p.data);
         }
     }
 }

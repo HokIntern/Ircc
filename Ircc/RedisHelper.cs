@@ -14,6 +14,8 @@ namespace Ircc
         private RedisKey RANKINGS = "Rankings";
         private RedisKey CURRENTUSERS = "CurrentUsers";
         private RedisKey nextUserId = "nextUserId";
+        private RedisKey ROOMS = "Rooms";
+        private RedisKey nextRoomId = "nextRoomId";
         private string userPrefix = "user:";
         
         public RedisHelper(ConfigurationOptions configOptions)
@@ -31,7 +33,7 @@ namespace Ircc
                 //throw new Exception("Error: Sign in failed.");
 
             string realPassword = (string)Database.HashGet(userPrefix + (long)userId, "password");
-            if (password == realPassword)
+            if (password != realPassword)
                 return -1;
                 //throw new Exception("Error: Sign in failed.");
 
@@ -48,9 +50,22 @@ namespace Ircc
                 //throw new Exception("Error: not in set");
         }
 
+        public long CreateRoom(string roomname)
+        {
+            if (Database.HashExists(ROOMS, roomname))
+                return -1;
+
+            long roomId = Database.StringIncrement(nextUserId);
+            // add to "Rooms" hashset (roomname to id mapping)
+            HashEntry[] roomnameMapping = { new HashEntry(roomname, roomId) };
+            Database.HashSet(ROOMS, roomnameMapping);
+
+            return roomId;
+        }
+
         public long CreateUser(string username, string password, bool isDummy = false, int chatCount = 0)
         {
-            if (Database.KeyExists(username))
+            if (Database.HashExists(USERS, username))
                 return -1;
                 //throw new Exception("Error: Sign up failed.");
 
