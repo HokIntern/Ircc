@@ -55,7 +55,7 @@ namespace Ircc
             if (Database.HashExists(ROOMS, roomname))
                 return -1;
 
-            long roomId = Database.StringIncrement(nextUserId);
+            long roomId = Database.StringIncrement(nextRoomId);
             // add to "Rooms" hashset (roomname to id mapping)
             HashEntry[] roomnameMapping = { new HashEntry(roomname, roomId) };
             Database.HashSet(ROOMS, roomnameMapping);
@@ -92,13 +92,17 @@ namespace Ircc
         
         public void UpdateUser(long userId, HashEntry[] userInfo)
         {
+            long currentCount = (long)Database.HashGet(userPrefix + userId, "chatCount");
             Database.HashSet(userPrefix + userId, userInfo);
 
             for(int i = 0; i < userInfo.Length; i++)
             {
                 if(userInfo[i].Name == "chatCount")
                 {
-                    Database.SortedSetAdd(RANKINGS, userId, (int)userInfo[i].Value);
+                    currentCount += (long)userInfo[i].Value;
+
+                    Database.HashSet(userPrefix + userId, "chatCount", currentCount);
+                    Database.SortedSetAdd(RANKINGS, userId, currentCount);
                     break;
                 }
             }
