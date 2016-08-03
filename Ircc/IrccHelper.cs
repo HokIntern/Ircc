@@ -96,6 +96,9 @@ namespace Ircc
             public const short LEAVE        = 600; // leave room req
             public const short LEAVE_RES    = 602; // leave room success
             public const short LEAVE_ERR    = 605; // not valid room / not in target room
+            public const short SLEAVE       = 650; // server leave room req
+            public const short SLEAVE_RES   = 652; // server leave room success
+            public const short SLEAVE_ERR   = 655; // not valid room / server not in target room
 
             public const short CREATE       = 700; // create room req
             public const short CREATE_RES   = 702; // create room success
