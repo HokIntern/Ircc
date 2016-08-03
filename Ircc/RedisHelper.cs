@@ -25,6 +25,18 @@ namespace Ircc
             configurationOptions = configOptions;
         }
 
+        public bool IsConnected()
+        {
+            bool connected = false;
+            try
+            {
+                connected = Database.IsConnected(USERS);
+            }
+            catch (Exception) { return false; }
+
+            return connected;
+        }
+
         public long SignIn(string username, string password)
         {
             RedisValue userId = Database.HashGet(USERS, username);
@@ -155,6 +167,7 @@ namespace Ircc
         {
             get
             {
+                //return ConnectionMultiplexer.Connect(configurationOptions).GetDatabase();
                 return Connection.GetDatabase();
             }
         }
