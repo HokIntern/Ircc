@@ -78,6 +78,8 @@ namespace Ircc
             public const short SIGNIN_RES   = 322; // login success
             public const short SIGNIN_ERR   = 325; // no such name; name & pass mismatch
 
+            public const short SIGNIN_DUMMY = 330; // dummy signin
+
             public const short LIST         = 400; // room list req
             public const short LIST_RES     = 402; // room list res
             public const short LIST_ERR     = 405; // *

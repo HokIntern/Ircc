@@ -36,7 +36,13 @@ namespace Ircc
 
             return connected;
         }
-
+        
+        public long SignInDummy(long userId)
+        {
+            //TODO: what should this do?
+            return userId;
+        }
+        
         public long SignIn(string username, string password)
         {
             RedisValue userId = Database.HashGet(USERS, username);
@@ -74,7 +80,29 @@ namespace Ircc
 
             return roomId;
         }
+        
+        public long CreateDummy()
+        {
+            long userId = Database.StringIncrement(nextUserId);
+            RedisKey dummy = userPrefix + userId;
 
+            string username = "dummy" + userId;
+            string password = "dummy" + userId;
+            // create dummy's hashset
+            HashEntry[] userData = { new HashEntry("username", username),
+                                     new HashEntry("password", password),
+                                     new HashEntry("isDummy", 1),
+                                     new HashEntry("chatCount", 0) };
+
+            Database.HashSet(dummy, userData);
+
+            // add to "users" hashset (username to id mapping)
+            HashEntry[] usernameMapping = { new HashEntry(username, userId) };
+            Database.HashSet(USERS, usernameMapping);
+
+            return userId;
+        }
+        
         public long CreateUser(string username, string password, bool isDummy = false, int chatCount = 0)
         {
             if (Database.HashExists(USERS, username))
