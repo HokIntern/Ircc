@@ -12,20 +12,15 @@ namespace Ircc
         public short comm;
         public short code;
         public int size;
-        public int reserved;
+        public short sequence;
+        public short reserved;
 
-        public Header(short comm, short code, int size)
+        public Header(short comm, short code, int size, short seqeunce = 1, short reserved = 0)
         {
             this.comm = comm;
             this.code = code;
             this.size = size;
-            this.reserved = 0;
-        }
-        public Header(short comm, short code, int size, int reserved)
-        {
-            this.comm = comm;
-            this.code = code;
-            this.size = size;
+            this.sequence = seqeunce;
             this.reserved = reserved;
         }
     }
@@ -48,7 +43,8 @@ namespace Ircc
             public const int COMM = 0;
             public const int CODE = 2;
             public const int SIZE = 4;
-            public const int RSVD = 8;
+            public const int SEQC = 8;
+            public const int RSVD = 10;
             public const int DATA = 12;
         }
 
@@ -134,14 +130,14 @@ namespace Ircc
             byte[] bComm = GetBytes(p.header.comm);
             byte[] bCode = GetBytes(p.header.code);
             byte[] bSize = GetBytes(p.header.size);
+            byte[] bSeqc = GetBytes(p.header.sequence);
             byte[] bRsvd = GetBytes(p.header.reserved);
 
             if (null == p.data)
-                return bComm.Concat(bCode).Concat(bSize).Concat(bRsvd).ToArray();
+                return bComm.Concat(bCode).Concat(bSize).Concat(bSeqc).Concat(bRsvd).ToArray();
 
-            return bComm.Concat(bCode).Concat(bSize).Concat(bRsvd).Concat(p.data).ToArray();
+            return bComm.Concat(bCode).Concat(bSize).Concat(bSeqc).Concat(bRsvd).Concat(p.data).ToArray();
         }
-
         public static Header BytesToHeader(byte[] b)
         {
             Header h = new Header();
@@ -149,7 +145,8 @@ namespace Ircc
             h.comm = ToInt16(b, FieldIndex.COMM);
             h.code = ToInt16(b, FieldIndex.CODE);
             h.size = ToInt32(b, FieldIndex.SIZE);
-            h.reserved = ToInt32(b, FieldIndex.RSVD);
+            h.sequence = ToInt16(b, FieldIndex.SEQC);
+            h.reserved = ToInt16(b, FieldIndex.RSVD);
 
             return h;
         }
@@ -160,7 +157,8 @@ namespace Ircc
             p.header.comm = ToInt16(b, FieldIndex.COMM);
             p.header.code = ToInt16(b, FieldIndex.CODE);
             p.header.size = ToInt32(b, FieldIndex.SIZE);
-            p.header.reserved = ToInt32(b, FieldIndex.RSVD);
+            p.header.sequence = ToInt16(b, FieldIndex.SEQC);
+            p.header.reserved = ToInt16(b, FieldIndex.RSVD);
             Array.Copy(b, FieldIndex.DATA, p.data, 0, p.header.size);
 
             return p;
@@ -172,6 +170,7 @@ namespace Ircc
             header.comm = comm;
             header.code = code;
             header.size = bMsg.Length;
+            header.sequence = 1;
             header.reserved = 0;
 
             Packet packet;
@@ -183,12 +182,31 @@ namespace Ircc
             return packet;
         }
 
-        public static Packet CreatePacket(short comm, short code, int reserv, byte[] bMsg)
+        public static Packet CreatePacket(short comm, short code, short sequence, byte[] bMsg)
         {
             Header header;
             header.comm = comm;
             header.code = code;
             header.size = bMsg.Length;
+            header.sequence = sequence;
+            header.reserved = 0;
+
+            Packet packet;
+            packet.header = header;
+            packet.data = bMsg;
+
+            //you can send this packet bytes
+            //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
+            return packet;
+        }
+
+        public static Packet CreatePacket(short comm, short code, short sequence, short reserv, byte[] bMsg)
+        {
+            Header header;
+            header.comm = comm;
+            header.code = code;
+            header.size = bMsg.Length;
+            header.sequence = sequence;
             header.reserved = reserv;
 
             Packet packet;
@@ -199,12 +217,14 @@ namespace Ircc
             //using socket.send(CreateBytesPacket(comm, code, reserved, bytesMsg));
             return packet;
         }
+
         public static Packet CreatePacket(short comm, short code)
         {
             Header header;
             header.comm = comm;
             header.code = code;
             header.size = 0;
+            header.sequence = 1;
             header.reserved = 0;
 
             Packet packet;
@@ -218,10 +238,10 @@ namespace Ircc
 
         public static string PacketDebug(Packet p)
         {
-            if(null == p.data)
-                return  "COMM: " + p.header.comm + "\nCODE: " + p.header.code +  "\nSIZE: " + p.header.size + "\nRSVD: " + p.header.reserved + "\nDATA: ";
+            if (null == p.data)
+                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: ";
             else
-                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nRSVD: " + p.header.reserved + "\nDATA: " + Encoding.UTF8.GetString(p.data);
+                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: " + Encoding.UTF8.GetString(p.data);
         }
     }
 }
