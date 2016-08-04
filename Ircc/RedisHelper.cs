@@ -31,11 +31,23 @@ namespace Ircc
             try
             {
                 connected = Database.IsConnected(USERS);
-                Database.KeyDelete(CURRENTUSERS);
             }
             catch (Exception) { return false; }
 
             return connected;
+        }
+        
+        public bool Reset()
+        {
+            try
+            {
+                Database.KeyDelete(CURRENTUSERS);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
         
         public long SignInDummy(long userId)

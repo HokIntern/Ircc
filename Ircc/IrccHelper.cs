@@ -79,6 +79,9 @@ namespace Ircc
             public const short LIST         = 400; // room list req
             public const short LIST_RES     = 402; // room list res
             public const short LIST_ERR     = 405; // *
+            public const short MLIST        = 420; // room/user count req
+            public const short MLIST_RES    = 422; // room/user count res
+            public const short MLIST_ERR    = 425; // *
             public const short SLIST        = 450; // server list req
             public const short SLIST_RES    = 452; // server list res
             public const short SLIST_ERR    = 455; // *
