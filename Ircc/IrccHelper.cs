@@ -291,6 +291,12 @@ namespace Ircc
                     return "LIST_ERR";
                 case Code.LIST_RES:
                     return "LIST_RES";
+                case Code.MLIST:
+                    return "MLIST";
+                case Code.MLIST_ERR:
+                    return "MLIST_ERR";
+                case Code.MLIST_RES:
+                    return "MLIST_RES";
                 case Code.MSG:
                     return "MSG";
                 case Code.MSG_ERR:
