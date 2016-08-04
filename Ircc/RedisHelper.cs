@@ -130,19 +130,21 @@ namespace Ircc
             return userId;
         }
         
+        public void IncrementUserChatCount(long userId)
+        {
+            Database.HashIncrement(userPrefix + userId, "chatCount");
+            Database.SortedSetIncrement(RANKINGS, userId, 1);
+        }
+        
         public void UpdateUser(long userId, HashEntry[] userInfo)
         {
-            long currentCount = (long)Database.HashGet(userPrefix + userId, "chatCount");
             Database.HashSet(userPrefix + userId, userInfo);
 
             for(int i = 0; i < userInfo.Length; i++)
             {
                 if(userInfo[i].Name == "chatCount")
                 {
-                    currentCount += (long)userInfo[i].Value;
-
-                    Database.HashSet(userPrefix + userId, "chatCount", currentCount);
-                    Database.SortedSetAdd(RANKINGS, userId, currentCount);
+                    Database.SortedSetAdd(RANKINGS, userId, (double)userInfo[i].Value);
                     break;
                 }
             }
@@ -157,15 +159,17 @@ namespace Ircc
         }
 
         //TODO: return Dictionary
-        public void GetAllTimeRankings(int endRank)
+        public Dictionary<string, double> GetAllTimeRankings(int endRank)
         {
-            Database.SortedSetRangeByRankWithScores(RANKINGS, 0, endRank, Order.Descending);
+            SortedSetEntry[] ranking = Database.SortedSetRangeByRankWithScores(RANKINGS, 0, endRank, Order.Descending);
+            return ranking.ToStringDictionary();
             //Database.SortedSetRangeByRank(RANKINGS, 0, endRank, Order.Descending);
         }
 
-        public void GetAllTimeRankings(int startRank, int endRank)
+        public Dictionary<string, double> GetAllTimeRankings(int startRank, int endRank)
         {
-            Database.SortedSetRangeByRankWithScores(RANKINGS, startRank, endRank, Order.Descending);
+            SortedSetEntry[] ranking = Database.SortedSetRangeByRankWithScores(RANKINGS, startRank, endRank, Order.Descending);
+            return ranking.ToStringDictionary();
         }
 
         /*
