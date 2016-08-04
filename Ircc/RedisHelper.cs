@@ -31,6 +31,7 @@ namespace Ircc
             try
             {
                 connected = Database.IsConnected(USERS);
+                Database.KeyDelete(CURRENTUSERS);
             }
             catch (Exception) { return false; }
 
@@ -53,7 +54,10 @@ namespace Ircc
             string realPassword = (string)Database.HashGet(userPrefix + (long)userId, "password");
             if (password != realPassword)
                 return -1;
-                //throw new Exception("Error: Sign in failed.");
+            //throw new Exception("Error: Sign in failed.");
+
+            if (Database.SetContains(CURRENTUSERS, userId))
+                return -1;
 
             Database.SetAdd(CURRENTUSERS, userId);
             return (long)userId;

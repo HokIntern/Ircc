@@ -239,9 +239,108 @@ namespace Ircc
         public static string PacketDebug(Packet p)
         {
             if (null == p.data)
-                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: ";
+                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + " ( " + CodeToString(p.header.code) + " ) " + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: ";
             else
-                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: " + Encoding.UTF8.GetString(p.data);
+                return "COMM: " + p.header.comm + "\nCODE: " + p.header.code + " ( " + CodeToString(p.header.code) + " ) " + "\nSIZE: " + p.header.size + "\nSEQC: " + p.header.sequence + "\nRSVD: " + p.header.reserved + "\nDATA: " + Encoding.UTF8.GetString(p.data);
+        }
+
+        public static string CodeToString(int code)
+        {
+            switch(code)
+            {
+                case Code.CREATE:
+                    return "CREATE";
+                case Code.CREATE_DUPLICATE_ERR:
+                    return "CREATE_DUPLICATE_ERR";
+                case Code.CREATE_FULL_ERR:
+                    return "CREATE_FULL_ERR";
+                case Code.CREATE_RES:
+                    return "CREATE_RES";
+                case Code.DESTROY:
+                    return "DESTROY";
+                case Code.DESTROY_ERR:
+                    return "DESTROY_ERR";
+                case Code.DESTROY_RES:
+                    return "DESTROY_RES";
+                case Code.FAIL:
+                    return "FAIL";
+                case Code.HEARTBEAT:
+                    return "HEARTBEAT";
+                case Code.HEARTBEAT_RES:
+                    return "HEARTBEAT_RES";
+                case Code.JOIN:
+                    return "JOIN";
+                case Code.JOIN_FULL_ERR:
+                    return "JOIN_FULL_ERR";
+                case Code.JOIN_NULL_ERR:
+                    return "JOIN_NULL_ERR";
+                case Code.JOIN_RES:
+                    return "JOIN_RES";
+                case Code.LEAVE:
+                    return "LEAVE";
+                case Code.LEAVE_ERR:
+                    return "LEAVE_ERR";
+                case Code.LEAVE_RES:
+                    return "LEAVE_RES";
+                case Code.LIST:
+                    return "LIST";
+                case Code.LIST_ERR:
+                    return "LIST_ERR";
+                case Code.LIST_RES:
+                    return "LIST_RES";
+                case Code.MSG:
+                    return "MSG";
+                case Code.MSG_ERR:
+                    return "MSG_ERR";
+                case Code.SDESTROY:
+                    return "SDESTROY";
+                case Code.SDESTROY_ERR:
+                    return "SDESTROY_ERR";
+                case Code.SDESTROY_RES:
+                    return "SDESTROY_RES";
+                case Code.SIGNIN:
+                    return "SIGNIN";
+                case Code.SIGNIN_DUMMY:
+                    return "SIGNIN_DUMMY";
+                case Code.SIGNIN_ERR:
+                    return "SIGNIN_ERR";
+                case Code.SIGNIN_RES:
+                    return "SIGNIN_RES";
+                case Code.SIGNUP:
+                    return "SIGNUP";
+                case Code.SIGNUP_ERR:
+                    return "SIGNUP_ERR";
+                case Code.SIGNUP_RES:
+                    return "SIGNUP_RES";
+                case Code.SJOIN:
+                    return "SJOIN";
+                case Code.SJOIN_ERR:
+                    return "SJOIN_ERR";
+                case Code.SJOIN_RES:
+                    return "SJOIN_RES";
+                case Code.SLEAVE:
+                    return "SLEAVE";
+                case Code.SLEAVE_ERR:
+                    return "SLEAVE_ERR";
+                case Code.SLEAVE_RES:
+                    return "SLEAVE_RES";
+                case Code.SLIST:
+                    return "SLIST";
+                case Code.SLIST_ERR:
+                    return "SLIST_ERR";
+                case Code.SLIST_RES:
+                    return "SLIST_RES";
+                case Code.SMSG:
+                    return "SMSG";
+                case Code.SMSG_ERR:
+                    return "SMSG_ERR";
+                case Code.SUCCESS:
+                    return "SUCCESS";
+                case -1:
+                    return "Timeout";
+                default:
+                    return "Unknown";
+            }
         }
     }
 }
