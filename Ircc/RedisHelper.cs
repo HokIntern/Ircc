@@ -17,7 +17,10 @@ namespace Ircc
         private RedisKey ROOMS = "Rooms";
         private RedisKey nextRoomId = "nextRoomId";
         private string userPrefix = "user:";
-        
+
+        HashEntry[] entries;
+        List<string> infoList;
+
         public RedisHelper(ConfigurationOptions configOptions)
         {
             if (null == configOptions)
@@ -49,10 +52,39 @@ namespace Ircc
                 return false;
             }
         }
-        
+
+        public List<string> GetDataList(RedisKey key)
+        {
+            entries = Database.HashGetAll(key);
+            infoList = new List<string>();
+            foreach (HashEntry entry in entries)
+            {
+                infoList.Add("Id: " + entry.Value + " \tName: " + entry.Name);
+            }
+            return infoList;
+        }
+
+        public string GetInfoValue(string id, int num)
+        {
+            RedisKey infoKey = userPrefix + id;
+            HashEntry[] entries = Database.HashGetAll(infoKey);
+
+            return entries[num].Value;
+        }
+
+        public List<string> GetInfo(RedisKey key)
+        {
+            entries = Database.HashGetAll(key);
+            infoList = new List<string>();
+            foreach (HashEntry entry in entries)
+            {
+                infoList.Add(entry.Name + " \t: " + entry.Value);
+            }
+            return infoList;
+        }
+
         public long SignInDummy(long userId)
         {
-            //TODO: what should this do?
             return userId;
         }
         
@@ -61,12 +93,10 @@ namespace Ircc
             RedisValue userId = Database.HashGet(USERS, username);
             if (userId.IsNull)
                 return -1;
-                //throw new Exception("Error: Sign in failed.");
 
             string realPassword = (string)Database.HashGet(userPrefix + (long)userId, "password");
             if (password != realPassword)
                 return -1;
-            //throw new Exception("Error: Sign in failed.");
 
             if (Database.SetContains(CURRENTUSERS, userId))
                 return -1;
@@ -81,7 +111,6 @@ namespace Ircc
             if (!Database.SetRemove(CURRENTUSERS, userId))
                 return false;
             return true;
-                //throw new Exception("Error: not in set");
         }
 
         public long CreateRoom(string roomname)
@@ -123,7 +152,6 @@ namespace Ircc
         {
             if (Database.HashExists(USERS, username))
                 return -1;
-                //throw new Exception("Error: Sign up failed.");
 
             long userId = Database.StringIncrement(nextUserId);
             RedisKey user = userPrefix + userId;
@@ -174,12 +202,10 @@ namespace Ircc
             Database.SortedSetRemove(RANKINGS, userId);
         }
 
-        //TODO: return Dictionary
         public Dictionary<string, double> GetAllTimeRankings(int endRank)
         {
             SortedSetEntry[] ranking = Database.SortedSetRangeByRankWithScores(RANKINGS, 0, endRank, Order.Descending);
             return ranking.ToStringDictionary();
-            //Database.SortedSetRangeByRank(RANKINGS, 0, endRank, Order.Descending);
         }
 
         public Dictionary<string, double> GetAllTimeRankings(int startRank, int endRank)
@@ -188,34 +214,10 @@ namespace Ircc
             return ranking.ToStringDictionary();
         }
 
-        /*
-        public static HashEntry[] MakeHashEntry()
-        {
-
-        }
-
-        
-        public static void Update<T>(this T instance)
-        {
-            string jsonString = instance.ToString();
-
-            Database.HashSet();
-
-        }
-        
-        public void ClearItem(string key)
-        {
-            if (key == null)
-                throw new ArgumentNullException("key");
-            Database.KeyDelete(key);
-        }
-        */
-
         private static IDatabase Database
         {
             get
             {
-                //return ConnectionMultiplexer.Connect(configurationOptions).GetDatabase();
                 return Connection.GetDatabase();
             }
         }
